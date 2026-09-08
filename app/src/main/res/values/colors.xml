@@ -2,6 +2,7 @@
     <color name="omni_bg">#FFFFFF</color>
     <color name="omni_surface">#F7F7F8</color>
     <color name="omni_user_bubble">#E9E9E9</color>
+    <color name="omni_chip">#F1F1F3</color>
     <color name="omni_text">#111111</color>
     <color name="omni_muted">#6B6B6B</color>
     <color name="omni_border">#E4E4E4</color>
