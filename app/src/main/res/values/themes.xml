@@ -9,5 +9,12 @@
         <item name="android:windowNoTitle">true</item>
         <item name="android:colorAccent">#111111</item>
     </style>
+
+    <style name="TextAppearance.Omni.Title" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0.01</item>
+    </style>
+
     <style name="AppTheme" parent="Base.AppTheme" />
 </resources>
