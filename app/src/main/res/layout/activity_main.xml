@@ -9,11 +9,14 @@
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="0dp"
-        android:layout_height="64dp"
+        android:layout_height="62dp"
         android:background="@color/omni_bg"
         android:elevation="0dp"
+        android:paddingStart="18dp"
+        android:paddingEnd="8dp"
         app:title="Omni"
         app:titleTextColor="@color/omni_text"
+        app:titleTextAppearance="@style/TextAppearance.Omni.Title"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -21,40 +24,49 @@
     <LinearLayout
         android:id="@+id/model_bar"
         android:layout_width="0dp"
-        android:layout_height="44dp"
+        android:layout_height="52dp"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="6dp"
         android:layout_marginEnd="16dp"
-        android:background="@color/omni_surface"
+        android:background="@drawable/bg_model_bar"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingStart="14dp"
-        android:paddingEnd="8dp"
+        android:paddingStart="12dp"
+        android:paddingEnd="6dp"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="28dp"
+            android:gravity="center"
+            android:minWidth="40dp"
+            android:background="@drawable/bg_nim_badge"
+            android:paddingStart="9dp"
+            android:paddingEnd="9dp"
             android:text="NIM"
-            android:textColor="@color/omni_muted"
-            android:textSize="12sp"
+            android:textColor="@color/omni_text"
+            android:textSize="11sp"
             android:textStyle="bold" />
 
         <Spinner
             android:id="@+id/model_spinner"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@android:color/transparent"
-            android:paddingStart="8dp" />
+            android:dropDownWidth="match_parent"
+            android:paddingStart="8dp"
+            android:paddingEnd="4dp" />
 
         <ImageButton
             android:id="@+id/refresh_models"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@android:color/transparent"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Refresh models"
+            android:padding="10dp"
             android:src="@android:drawable/ic_popup_sync"
             android:tint="@color/omni_text" />
     </LinearLayout>
@@ -62,11 +74,11 @@
     <TextView
         android:id="@+id/status"
         android:layout_width="0dp"
-        android:layout_height="24dp"
+        android:layout_height="28dp"
         android:gravity="center_vertical"
-        android:paddingStart="18dp"
-        android:paddingEnd="18dp"
-        android:text="NVIDIA NIM"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:text="NVIDIA NIM • Ready"
         android:textColor="@color/omni_muted"
         android:textSize="11sp"
         app:layout_constraintTop_toBottomOf="@id/model_bar"
@@ -80,10 +92,10 @@
         android:clipToPadding="false"
         android:fillViewport="true"
         android:overScrollMode="never"
-        android:paddingStart="16dp"
-        android:paddingTop="12dp"
-        android:paddingEnd="16dp"
-        android:paddingBottom="16dp"
+        android:paddingStart="18dp"
+        android:paddingTop="14dp"
+        android:paddingEnd="18dp"
+        android:paddingBottom="18dp"
         android:scrollbars="none"
         app:layout_constraintTop_toBottomOf="@id/status"
         app:layout_constraintBottom_toTopOf="@id/composer_wrap"
@@ -102,6 +114,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@color/omni_bg"
+        android:elevation="8dp"
         android:orientation="vertical"
         android:paddingStart="12dp"
         android:paddingTop="8dp"
@@ -117,8 +130,10 @@
             android:layout_height="wrap_content"
             android:background="@drawable/bg_composer"
             android:gravity="center_vertical"
-            android:minHeight="56dp"
-            android:orientation="horizontal">
+            android:minHeight="58dp"
+            android:orientation="horizontal"
+            android:paddingStart="4dp"
+            android:paddingEnd="6dp">
 
             <EditText
                 android:id="@+id/message_input"
@@ -131,7 +146,9 @@
                 android:inputType="textCapSentences|textMultiLine"
                 android:maxLines="5"
                 android:minHeight="48dp"
+                android:paddingStart="12dp"
                 android:paddingTop="8dp"
+                android:paddingEnd="8dp"
                 android:paddingBottom="8dp"
                 android:textColor="@color/omni_text"
                 android:textColorHint="@color/omni_muted"
@@ -139,17 +156,18 @@
 
             <ImageButton
                 android:id="@+id/send_button"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
+                android:layout_width="46dp"
+                android:layout_height="46dp"
                 android:background="@drawable/bg_send"
                 android:contentDescription="Send message"
+                android:padding="12dp"
                 android:src="@android:drawable/ic_menu_send"
                 android:tint="@android:color/white" />
         </LinearLayout>
 
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="20dp"
+            android:layout_height="18dp"
             android:gravity="center"
             android:text="AI can make mistakes. Check important information."
             android:textColor="@color/omni_muted"
