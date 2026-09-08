@@ -2,15 +2,18 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/omni_bg"
+    android:fitsSystemWindows="false">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="0dp"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        app:title="@string/app_name"
-        app:titleTextColor="?attr/colorOnPrimary"
+        android:layout_height="64dp"
+        android:background="@color/omni_bg"
+        android:elevation="0dp"
+        app:title="Omni"
+        app:titleTextColor="@color/omni_text"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -18,37 +21,54 @@
     <LinearLayout
         android:id="@+id/model_bar"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="44dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@color/omni_surface"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="10dp"
+        android:paddingStart="14dp"
+        android:paddingEnd="8dp"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="NIM"
+            android:textColor="@color/omni_muted"
+            android:textSize="12sp"
+            android:textStyle="bold" />
 
         <Spinner
             android:id="@+id/model_spinner"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:paddingStart="8dp" />
 
-        <Button
+        <ImageButton
             android:id="@+id/refresh_models"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Refresh" />
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="Refresh models"
+            android:src="@android:drawable/ic_popup_sync"
+            android:tint="@color/omni_text" />
     </LinearLayout>
 
     <TextView
         android:id="@+id/status"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:paddingStart="14dp"
-        android:paddingEnd="14dp"
-        android:paddingBottom="6dp"
+        android:layout_height="24dp"
+        android:gravity="center_vertical"
+        android:paddingStart="18dp"
+        android:paddingEnd="18dp"
         android:text="NVIDIA NIM"
-        android:textSize="12sp"
-        android:alpha="0.7"
+        android:textColor="@color/omni_muted"
+        android:textSize="11sp"
         app:layout_constraintTop_toBottomOf="@id/model_bar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -57,10 +77,16 @@
         android:id="@+id/chat_scroll"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:clipToPadding="false"
         android:fillViewport="true"
-        android:padding="8dp"
+        android:overScrollMode="never"
+        android:paddingStart="16dp"
+        android:paddingTop="12dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="16dp"
+        android:scrollbars="none"
         app:layout_constraintTop_toBottomOf="@id/status"
-        app:layout_constraintBottom_toTopOf="@id/input_bar"
+        app:layout_constraintBottom_toTopOf="@id/composer_wrap"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
@@ -72,31 +98,62 @@
     </ScrollView>
 
     <LinearLayout
-        android:id="@+id/input_bar"
+        android:id="@+id/composer_wrap"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:padding="8dp"
+        android:background="@color/omni_bg"
+        android:orientation="vertical"
+        android:paddingStart="12dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <EditText
-            android:id="@+id/message_input"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:id="@+id/input_bar"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="Message NVIDIA NIM…"
-            android:inputType="textCapSentences|textMultiLine"
-            android:maxLines="4"
-            android:minHeight="52dp" />
+            android:background="@drawable/bg_composer"
+            android:gravity="center_vertical"
+            android:minHeight="56dp"
+            android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/send_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Send" />
+            <EditText
+                android:id="@+id/message_input"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:hint="Message Omni…"
+                android:imeOptions="actionSend"
+                android:inputType="textCapSentences|textMultiLine"
+                android:maxLines="5"
+                android:minHeight="48dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:textColor="@color/omni_text"
+                android:textColorHint="@color/omni_muted"
+                android:textSize="16sp" />
+
+            <ImageButton
+                android:id="@+id/send_button"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="@drawable/bg_send"
+                android:contentDescription="Send message"
+                android:src="@android:drawable/ic_menu_send"
+                android:tint="@android:color/white" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:gravity="center"
+            android:text="AI can make mistakes. Check important information."
+            android:textColor="@color/omni_muted"
+            android:textSize="10sp" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
