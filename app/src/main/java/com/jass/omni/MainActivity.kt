@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.Gravity
 import android.view.View
 import android.widget.ArrayAdapter
-import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -40,9 +39,8 @@ class MainActivity : AppCompatActivity() {
         binding.toolbar.setOnMenuItemClickListener { item ->
             if (item.itemId == 100) { showSettings(); true } else false
         }
-        binding.toolbar.inflateMenu(com.google.android.material.R.menu.overflow_menu)
-        binding.toolbar.menu.clear()
-        binding.toolbar.menu.add(0, 100, 0, "Settings").setIcon(android.R.drawable.ic_menu_preferences).setShowAsAction(2)
+        binding.toolbar.menu.add(0, 100, 0, "Settings")
+            .setIcon(android.R.drawable.ic_menu_preferences).setShowAsAction(2)
 
         models.add(prefs.getString("model", DEFAULT_MODEL) ?: DEFAULT_MODEL)
         setupModelSpinner()
@@ -61,7 +59,6 @@ class MainActivity : AppCompatActivity() {
     private fun setupModelSpinner() {
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, models)
         binding.modelSpinner.adapter = adapter
-        binding.modelSpinner.setSelection(0)
     }
 
     private fun showSettings() {
@@ -69,7 +66,7 @@ class MainActivity : AppCompatActivity() {
             orientation = android.widget.LinearLayout.VERTICAL
             setPadding(40, 10, 40, 0)
         }
-        val keyInput = EditText(this).apply {
+        val keyInput = android.widget.EditText(this).apply {
             hint = "NVIDIA API key"
             inputType = 0x00000081
             setText(securePrefs.getApiKey())
@@ -163,8 +160,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 val json = request("$BASE_URL/chat/completions", key, "POST", body.toString())
                 json.optJSONArray("choices")?.optJSONObject(0)?.optJSONObject("message")?.optString("content")
-                    ?.takeIf { it.isNotBlank() }
-                    ?: error("NIM returned an empty response")
+                    ?.takeIf { it.isNotBlank() } ?: error("NIM returned an empty response")
             }.onSuccess { reply ->
                 messages += "assistant" to reply
                 runOnUiThread {
@@ -205,9 +201,7 @@ class MainActivity : AppCompatActivity() {
                 error("HTTP ${connection.responseCode}: ${detail.ifBlank { "NIM request failed" }}")
             }
             return JSONObject(text)
-        } finally {
-            connection.disconnect()
-        }
+        } finally { connection.disconnect() }
     }
 
     private fun addBubble(label: String, text: String, user: Boolean) {
@@ -216,17 +210,13 @@ class MainActivity : AppCompatActivity() {
             gravity = if (user) Gravity.END else Gravity.START
             setPadding(8, 8, 8, 8)
         }
-        val title = TextView(this).apply {
-            this.text = label
-            textSize = 12f
-            alpha = 0.65f
-        }
+        val title = TextView(this).apply { this.text = label; textSize = 12f; alpha = 0.65f }
         val bubble = TextView(this).apply {
             this.text = text
             textSize = 16f
             setPadding(20, 14, 20, 14)
             setTextColor(ContextCompat.getColor(this@MainActivity, android.R.color.primary_text_light))
-            setBackgroundResource(if (user) android.R.drawable.dialog_holo_light_frame else android.R.drawable.editbox_background)
+            setBackgroundResource(android.R.drawable.editbox_background)
         }
         wrapper.addView(title)
         wrapper.addView(bubble)
