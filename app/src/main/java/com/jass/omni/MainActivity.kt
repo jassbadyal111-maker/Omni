@@ -14,7 +14,9 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsAnimationCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.jass.omni.databinding.ActivityMainBinding
@@ -37,6 +39,7 @@ class MainActivity : AppCompatActivity() {
     private var streamConnection: HttpURLConnection? = null
     private var activeAssistantView: TextView? = null
     private var activeAssistantText = StringBuilder()
+    private var baseComposerTranslationY = 0f
 
     companion object {
         private const val BASE_URL = "https://integrate.api.nvidia.com/v1"
@@ -45,13 +48,14 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        WindowCompat.setDecorFitsSystemWindows(window, true)
-        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
         hideSystemBars()
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         securePrefs = SecurePrefs(this)
+        setupInsetsHandling()
 
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -59,7 +63,8 @@ class MainActivity : AppCompatActivity() {
             if (item.itemId == 100) { showSettings(); true } else false
         }
         binding.toolbar.menu.add(0, 100, 0, "Settings")
-            .setIcon(android.R.drawable.ic_menu_preferences).setShowAsAction(2)
+            .setIcon(android.R.drawable.ic_menu_preferences)
+            .setShowAsAction(2)
 
         models.add(prefs.getString("model", DEFAULT_MODEL) ?: DEFAULT_MODEL)
         setupModelSpinner()
@@ -68,6 +73,9 @@ class MainActivity : AppCompatActivity() {
         binding.messageInput.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEND) { sendMessage(); true } else false
         }
+        binding.messageInput.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) scrollToBottom()
+        }
 
         binding.status.text = if (securePrefs.getApiKey().isBlank()) {
             "Add NVIDIA API key in Settings"
@@ -75,7 +83,61 @@ class MainActivity : AppCompatActivity() {
             "NVIDIA NIM • Ready"
         }
         if (securePrefs.getApiKey().isNotBlank()) refreshModels(silent = true)
-        binding.messageInput.requestFocus()
+    }
+
+    private fun setupInsetsHandling() {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+            val ime = insets.getInsets(WindowInsetsCompat.Type.ime())
+            val system = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val imeVisible = insets.isVisible(WindowInsetsCompat.Type.ime())
+
+            binding.toolbar.setPadding(binding.toolbar.paddingLeft, maxOf(binding.toolbar.paddingTop, system.top), binding.toolbar.paddingRight, binding.toolbar.paddingBottom)
+
+            if (!imeVisible) {
+                binding.composerWrap.translationY = baseComposerTranslationY
+                binding.chatScroll.setPadding(
+                    binding.chatScroll.paddingLeft,
+                    binding.chatScroll.paddingTop,
+                    binding.chatScroll.paddingRight,
+                    dp(18)
+                )
+            } else {
+                val bottom = ime.bottom.coerceAtLeast(system.bottom)
+                binding.composerWrap.translationY = -bottom.toFloat()
+                binding.chatScroll.setPadding(
+                    binding.chatScroll.paddingLeft,
+                    binding.chatScroll.paddingTop,
+                    binding.chatScroll.paddingRight,
+                    dp(18) + binding.composerWrap.height + bottom
+                )
+                scrollToBottom()
+            }
+            insets
+        }
+
+        ViewCompat.setWindowInsetsAnimationCallback(
+            binding.root,
+            object : WindowInsetsAnimationCompat.Callback(DISPATCH_MODE_CONTINUE_ON_SUBTREE) {
+                override fun onProgress(
+                    insets: WindowInsetsCompat,
+                    runningAnimations: MutableList<WindowInsetsAnimationCompat>
+                ): WindowInsetsCompat {
+                    val ime = insets.getInsets(WindowInsetsCompat.Type.ime())
+                    val system = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+                    if (insets.isVisible(WindowInsetsCompat.Type.ime())) {
+                        val bottom = ime.bottom.coerceAtLeast(system.bottom)
+                        binding.composerWrap.translationY = -bottom.toFloat()
+                        binding.chatScroll.setPadding(
+                            binding.chatScroll.paddingLeft,
+                            binding.chatScroll.paddingTop,
+                            binding.chatScroll.paddingRight,
+                            dp(18) + binding.composerWrap.height + bottom
+                        )
+                    }
+                    return insets
+                }
+            }
+        )
     }
 
     private fun hideSystemBars() {
@@ -85,7 +147,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupModelSpinner() {
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, models)
+        val adapter = object : ArrayAdapter<String>(this, R.layout.item_model, models) {
+            override fun getView(position: Int, convertView: View?, parent: android.view.ViewGroup): View {
+                return super.getView(position, convertView, parent).also { view ->
+                    (view as? TextView)?.setTextColor(Color.BLACK)
+                }
+            }
+        }
+        adapter.setDropDownViewResource(R.layout.item_model_dropdown)
         binding.modelSpinner.adapter = adapter
     }
 
@@ -293,7 +362,7 @@ class MainActivity : AppCompatActivity() {
             this.text = text
             textSize = 16f
             setTextColor(Color.BLACK)
-            background = getDrawable(com.jass.omni.R.drawable.bg_user_message)
+            background = getDrawable(R.drawable.bg_user_message)
             setTextIsSelectable(true)
             maxWidth = (resources.displayMetrics.widthPixels * 0.82f).toInt()
         }
@@ -340,6 +409,8 @@ class MainActivity : AppCompatActivity() {
     private fun scrollToBottom() {
         binding.chatScroll.post { binding.chatScroll.fullScroll(View.FOCUS_DOWN) }
     }
+
+    private fun dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()
 
     private fun requestJson(url: String, apiKey: String, method: String, body: String?): JSONObject {
         val connection = (URL(url).openConnection() as HttpURLConnection).apply {
