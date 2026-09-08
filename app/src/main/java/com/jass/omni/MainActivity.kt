@@ -9,7 +9,6 @@ import android.view.animation.DecelerateInterpolator
 import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
 import android.widget.EditText
-import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -233,9 +232,8 @@ class MainActivity : AppCompatActivity() {
             }
 
             BufferedReader(InputStreamReader(connection.inputStream, Charsets.UTF_8)).use { reader ->
-                var line: String?
-                while (generating && reader.readLine().also { line = it } != null) {
-                    val raw = line ?: continue
+                while (generating) {
+                    val raw = reader.readLine() ?: break
                     if (!raw.startsWith("data:")) continue
                     val payload = raw.removePrefix("data:").trim()
                     if (payload == "[DONE]") break
